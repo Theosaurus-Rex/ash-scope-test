@@ -8,6 +8,7 @@ defmodule ScopeResearchAndDevelopment.MixProject do
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
+      consolidate_protocols: Mix.env() != :dev,
       aliases: aliases(),
       deps: deps(),
       listeners: [Phoenix.CodeReloader]
@@ -33,6 +34,11 @@ defmodule ScopeResearchAndDevelopment.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:sourceror, "~> 1.8", only: [:dev, :test]},
+      {:ash_postgres, "~> 2.0", override: true},
+      {:ash_phoenix, "~> 2.0", override: true},
+      {:ash, github: "ash-project/ash", branch: "scopes", override: true},
+      {:igniter, "~> 0.5", only: [:dev, :test]},
       {:phoenix, "~> 1.8.0-rc.0", override: true},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.10"},
@@ -70,12 +76,15 @@ defmodule ScopeResearchAndDevelopment.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
+      setup: ["deps.get", "ash.setup", "assets.setup", "assets.build", "run priv/repo/seeds.exs"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      test: ["ash.setup --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind scope_research_and_development", "esbuild scope_research_and_development"],
+      "assets.build": [
+        "tailwind scope_research_and_development",
+        "esbuild scope_research_and_development"
+      ],
       "assets.deploy": [
         "tailwind scope_research_and_development --minify",
         "esbuild scope_research_and_development --minify",

@@ -10,7 +10,8 @@ defmodule ScopeResearchAndDevelopment.Application do
     children = [
       ScopeResearchAndDevelopmentWeb.Telemetry,
       ScopeResearchAndDevelopment.Repo,
-      {DNSCluster, query: Application.get_env(:scope_research_and_development, :dns_cluster_query) || :ignore},
+      {DNSCluster,
+       query: Application.get_env(:scope_research_and_development, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: ScopeResearchAndDevelopment.PubSub},
       # Start a worker by calling: ScopeResearchAndDevelopment.Worker.start_link(arg)
       # {ScopeResearchAndDevelopment.Worker, arg},
