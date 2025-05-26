@@ -54,7 +54,12 @@ defmodule ScopeResearchAndDevelopmentWeb.Router do
       on_mount: [{ScopeResearchAndDevelopmentWeb.UserAuth, :require_authenticated}] do
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
-      live "/books/new", BookLive.New, :new
+      live "/books", BookLive.Index, :index
+      live "/books/new", BookLive.Form, :new
+      live "/books/:id/edit", BookLive.Form, :edit
+
+      live "/books/:id", BookLive.Show, :show
+      live "/books/:id/show/edit", BookLive.Show, :edit
     end
 
     post "/users/update-password", UserSessionController, :update_password
