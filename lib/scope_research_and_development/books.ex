@@ -1,6 +1,5 @@
 defmodule ScopeResearchAndDevelopment.Books do
-  use Ash.Domain,
-    otp_app: :scope_research_and_development
+  use Ash.Domain, otp_app: :scope_research_and_development, extensions: [AshPhoenix]
 
   resources do
     resource ScopeResearchAndDevelopment.Books.Book do
