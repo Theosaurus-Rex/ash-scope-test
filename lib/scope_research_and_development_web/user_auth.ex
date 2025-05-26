@@ -68,7 +68,10 @@ defmodule ScopeResearchAndDevelopmentWeb.UserAuth do
     with {token, conn} <- ensure_user_token(conn),
          {user, token_inserted_at} <- Accounts.get_user_by_session_token(token) do
       conn
-      |> assign(:current_scope, Scope.for_user(user))
+      |> assign(
+        :current_scope,
+        Scope.new(user, ScopeResearchAndDevelopment.Books.list_libraries!() |> Enum.at(0))
+      )
       |> maybe_reissue_user_session_token(user, token_inserted_at)
     else
       nil -> assign(conn, :current_scope, Scope.for_user(nil))
@@ -173,7 +176,11 @@ defmodule ScopeResearchAndDevelopmentWeb.UserAuth do
   """
   def disconnect_sessions(tokens) do
     Enum.each(tokens, fn %{token: token} ->
-      ScopeResearchAndDevelopmentWeb.Endpoint.broadcast(user_session_topic(token), "disconnect", %{})
+      ScopeResearchAndDevelopmentWeb.Endpoint.broadcast(
+        user_session_topic(token),
+        "disconnect",
+        %{}
+      )
     end)
   end
 
@@ -252,7 +259,7 @@ defmodule ScopeResearchAndDevelopmentWeb.UserAuth do
           Accounts.get_user_by_session_token(user_token)
         end || {nil, nil}
 
-      Scope.for_user(user)
+      Scope.new(user, ScopeResearchAndDevelopment.Books.list_libraries!() |> Enum.at(0))
     end)
   end
 

@@ -10,6 +10,12 @@ defmodule ScopeResearchAndDevelopment.Books.Library do
     repo ScopeResearchAndDevelopment.Repo
   end
 
+  defimpl Ash.ToTenant do
+    def to_tenant(library, _) do
+      library.id
+    end
+  end
+
   actions do
     defaults [:read, :destroy, update: :*, create: :*]
   end

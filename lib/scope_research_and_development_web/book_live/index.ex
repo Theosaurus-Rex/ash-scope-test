@@ -48,7 +48,7 @@ defmodule ScopeResearchAndDevelopmentWeb.BookLive.Index do
      socket
      |> stream(
        :books,
-       Ash.read!(ScopeResearchAndDevelopment.Books.Book, actor: socket.assigns[:current_user])
+       Ash.read!(ScopeResearchAndDevelopment.Books.Book, scope: socket.assigns.current_scope)
      )
      |> assign_new(:current_user, fn -> nil end)}
   end
