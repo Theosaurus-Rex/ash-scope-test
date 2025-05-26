@@ -2,23 +2,15 @@ defmodule ScopeResearchAndDevelopment.Accounts.Scope do
   @moduledoc """
   Defines the scope of the caller to be used throughout the app.
 
-  The `ScopeResearchAndDevelopment.Accounts.Scope` allows public interfaces to receive
-  information about the caller, such as if the call is initiated from an
-  end-user, and if so, which user. Additionally, such a scope can carry fields
-  such as "super user" or other privileges for use as authorization, or to
-  ensure specific code paths can only be access for a given scope.
-
-  It is useful for logging as well as for scoping pubsub subscriptions and
-  broadcasts when a caller subscribes to an interface or performs a particular
-  action.
-
-  Feel free to extend the fields on this struct to fit the needs of
-  growing application requirements.
+  The `ScopeResearchAndDevelopment.Accounts.Scope` implements the `Ash.Scope` protocol
+  to provide standardized access to actor (user), tenant, and context information.
+  This allows for consistent usage across the application and integration with
+  Ash's authorization and context systems.
   """
 
   alias ScopeResearchAndDevelopment.Accounts.User
 
-  defstruct user: nil
+  defstruct [:user, :tenant, :context]
 
   @doc """
   Creates a scope for the given user.
@@ -26,8 +18,25 @@ defmodule ScopeResearchAndDevelopment.Accounts.Scope do
   Returns nil if no user is given.
   """
   def for_user(%User{} = user) do
-    %__MODULE__{user: user}
+    %__MODULE__{user: user, context: %{}}
   end
 
   def for_user(nil), do: nil
+
+  @doc """
+  Creates a scope with all available options.
+  """
+  def new(user \\ nil, tenant \\ nil, context \\ %{}) do
+    %__MODULE__{
+      user: user,
+      tenant: tenant,
+      context: context
+    }
+  end
+end
+
+defimpl Ash.Scope, for: ScopeResearchAndDevelopment.Accounts.Scope do
+  def get_actor(%{user: user}), do: {:ok, user}
+  def get_tenant(%{tenant: tenant}), do: {:ok, tenant}
+  def get_context(%{context: context}), do: {:ok, context || %{}}
 end
