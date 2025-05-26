@@ -67,11 +67,16 @@ defmodule ScopeResearchAndDevelopmentWeb.UserAuth do
   def fetch_current_scope_for_user(conn, _opts) do
     with {token, conn} <- ensure_user_token(conn),
          {user, token_inserted_at} <- Accounts.get_user_by_session_token(token) do
+      library = ScopeResearchAndDevelopment.Books.list_libraries!() |> Enum.at(0)
+      scope = Scope.new(user, library)
+
       conn
       |> assign(
         :current_scope,
-        Scope.new(user, ScopeResearchAndDevelopment.Books.list_libraries!() |> Enum.at(0))
+        scope
       )
+      |> Ash.PlugHelpers.set_actor(user)
+      |> Ash.PlugHelpers.set_tenant(library)
       |> maybe_reissue_user_session_token(user, token_inserted_at)
     else
       nil -> assign(conn, :current_scope, Scope.for_user(nil))
