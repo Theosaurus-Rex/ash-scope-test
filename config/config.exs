@@ -58,7 +58,8 @@ config :spark,
 
 config :scope_research_and_development,
   ecto_repos: [ScopeResearchAndDevelopment.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [timestamp_type: :utc_datetime],
+  ash_domains: [ScopeResearchAndDevelopment.Books]
 
 # Configures the endpoint
 config :scope_research_and_development, ScopeResearchAndDevelopmentWeb.Endpoint,
